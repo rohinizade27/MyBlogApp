@@ -1,0 +1,103 @@
+<!-- Login/Registration Page - HTML -->
+
+<!DOCTYPE html>
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'js/login.js' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="login">
+    <div class="form">
+        <form class="registration-form">
+            <input type="text" placeholder="name" name="username" />
+            <input type="text" placeholder="email" name="email"/>
+            <input type="password" placeholder="password" name="password" />
+            <button>create</button>
+            <p class="alternate"><a href="#">Log In</a></p>
+        </form>
+        <form class="login-form">
+            <input type="text" placeholder="email" name="login_email"/>
+            <input type="password" placeholder="password" name="login_password" />
+            <button>Login</button>
+            <p class="alternate"><a href="#">Register</a></p>
+        </form>
+    </div>
+</div>
+
+<script>
+    $('.alternate').click(function () {
+        $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
+    });
+
+    // Create User Ajax Call
+    $("form.registration-form").submit(function() {
+        console.log("hello")
+        var nameInput = $('input[name="username"]').val().trim();
+        var passwordInput = $('input[name="password"]').val().trim();
+        var emailInput = $('input[name="email"]').val().trim();
+        console.log(nameInput,passwordInput,emailInput)
+        if (nameInput && passwordInput && emailInput) {
+            // Create Ajax Call
+            $.ajax({
+                url: '/users/api/register/',
+                type: 'POST',
+                data: {
+                    'name': nameInput,
+                    'password': passwordInput,
+                    'email': emailInput
+                },
+                dataType: 'json',
+                success: function (data) {
+                        showAlertBox("Registration Successful", "Congratulations! Your registration was successful.");
+                }
+            });
+          } else {
+            alert("All fields must have a valid value.");
+        }
+        $('form#addUser').trigger("reset");
+        return false;
+    });
+
+    // login Ajax Call
+    $("form.login-form").submit(function() {
+        console.log("hello")
+        var passwordInput = $('input[name="login_password"]').val().trim();
+        var emailInput = $('input[name="login_email"]').val().trim();
+        console.log(passwordInput,emailInput)
+        if (passwordInput && emailInput) {
+            // Create Ajax Call
+            $.ajax({
+                url: '/users/api/token/',
+                type: 'POST',
+                data: {
+                    'password': passwordInput,
+                    'email': emailInput
+                },
+                dataType: 'json',
+                success: function (data) {
+                        if (data) {
+                            showAlertBox("Success", "login successful.");
+                            localStorage.setItem('accessToken', data['access']);
+                            console.log(data);
+                        }
+                },
+                error: function(xhr, status, error) {
+                if (xhr.status === 401) {
+                  // Show unauthorized popup
+                  showAlertBox("Unauthorized", "You are not authorized to access this resource.");
+                } else {
+                  // Handle other errors
+                }
+              }
+            });
+          } else {
+            alert("All fields must have a valid value.");
+        }
+        $('form#addUser').trigger("reset");
+        return false;
+    });
+
+    function showAlertBox(title, message) {
+      alert(title + "\n\n" + message);
+    }
+</script>
