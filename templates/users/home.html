@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'js/login.js' %}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<body style="background-image: url('{% static 'img/home.jpg' %}')">
 <div class="login">
     <div class="form">
         <form class="registration-form">
@@ -23,6 +24,7 @@
         </form>
     </div>
 </div>
+</body>>
 
 <script>
     $('.alternate').click(function () {
@@ -52,7 +54,7 @@
                 }
             });
           } else {
-            alert("All fields must have a valid value.");
+            alert("Please fill the required details.");
         }
         $('form#addUser').trigger("reset");
         return false;
@@ -91,7 +93,7 @@
               }
             });
           } else {
-            alert("All fields must have a valid value.");
+            alert("Please fill the required details.");
         }
         $('form#addUser').trigger("reset");
         return false;
