@@ -1,0 +1,61 @@
+{% extends "blog/base.html" %}
+{% block start %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<div class="container mt-5">
+    <a href="/" class="btn btn-warning">View Your blogs</a>
+    <form method="post" class="mt-5 pt-5 mb-5 pb-5" id="blogForm" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" name="title" required>
+      </div>
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea class="form-control" id="content" name="content" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="image">Image</label>
+        <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Create Blog</button>
+    </form>
+</div>
+<script>
+
+ $(document).ready(function() {
+    function createBlog(event) {
+    event.preventDefault();
+    function showAlertBox(message) {
+      alert(message);
+    }
+    var formData = new FormData($('#blogForm')[0]);
+    var token = localStorage.getItem('accessToken'); // Retrieve the token from local storage
+    console.log(token)
+    if(formData){
+    $.ajax({
+        type: 'POST',
+        url: '/blogs/api/blog-list-create/',
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: function(xhr, settings) {
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token); // Include the token in the request headers
+      },
+        success: function(response) {
+          // Create a Bootstrap card to display the blog
+          showAlertBox("Blog created successful");
+        },
+        error: function(xhr, textStatus, error) {
+          console.log(error);
+        }
+      });
+    }else {
+            alert("Please fill the required details.");
+        }
+  }
+  $('#blogForm').submit(createBlog);
+    });
+
+</script>>
+{% endblock %}

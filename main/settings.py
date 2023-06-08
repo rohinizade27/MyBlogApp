@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,9 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    # 'froala_editor',
     'corsheaders',
     'crispy_forms',
-    'apps.users'
+    'apps.users',
+    'apps.blogs'
 ]
 
 MIDDLEWARE = [
@@ -126,7 +129,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'staticfiles' ),
+    os.path.join(BASE_DIR, 'staticfiles'),
 ]
 
 # Media Files
@@ -153,6 +156,15 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'email',
     'USER_ID_CLAIM': 'email',
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # Set the desired lifetime for access tokens
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),  # Set the desired lifetime for refresh tokens
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
 CORS_ORIGIN_ALLOW_ALL = True

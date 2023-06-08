@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block start %}
+
+<section class="mt-5 pt-5">
+    <div class="container">
+        <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Blog title</th>
+            <th scope="col">Created at</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"></th>
+            <td></td>
+            <td></td>
+            <td>
+                <a href="{%  url 'blog_update' blog.slug %}" class="btn btn-success">Update</a>
+                <a href="{% url 'blog_delete' blog.id %}" class="btn btn-danger">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+          </table>
+    </div>
+</section>
+
+<script>
+  $(document).ready(function() {
+    // Retrieve the list of blogs from the server
+    $.ajax({
+      type: 'GET',
+      url: '/blogs/api/blog-list-create/',
+      success: function(response) {
+       console.log(response)
+        // Loop through the blogs and create Bootstrap cards
+        for (var i = 0; i < response.length; i++) {
+          var blog = response[i];
+          var blogCard = `
+            <div class="card mb-3">
+              <img src="${blog.image}" class="card-img-top" alt="Blog Image">
+              <div class="card-body">
+                <h5 class="card-title">${blog.title}</h5>
+                <p class="card-text">${blog.content}</p>
+                <p class="card-text"><small class="text-muted">${blog.created_at}</small></p>
+              </div>
+            </div>
+          `;
+          $('#blogContainer').append(blogCard); // Append the card to the container
+        }
+      },
+      error: function(xhr, textStatus, error) {
+        console.log(error);
+      }
+    });
+  });
+</script>
+
+
+
+
+{% endblock %}

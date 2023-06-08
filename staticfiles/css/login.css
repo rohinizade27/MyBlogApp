@@ -52,8 +52,7 @@
   }
 
 body {
-    #background: #3d3d3d;
-    background-image: url("{% static 'img/home.jpg' %}");
+    background: #3d3d3d;
     background-size: cover;
     font-family: "Lato", sans-serif;     
   }

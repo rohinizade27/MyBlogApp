@@ -1,10 +1,8 @@
-# app_name/serializers.py
 import re
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
 from django.core.validators import EmailValidator
-from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
 
