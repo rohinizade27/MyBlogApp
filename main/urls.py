@@ -18,14 +18,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from apps.users.views import HomeView
-from apps.blogs.views import BlogView, AddBlogView, logout_view, DetailBlogView
+from apps.blogs.views import BlogView, AddBlogView, DetailBlogView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', HomeView.as_view(), name='signup_page'),
     path('home/', BlogView.as_view(), name='home'),
     path('add_blog/', AddBlogView.as_view(), name='add_blog'),
-    path('logout_view/', logout_view,name='logout_view'),
     path('blog_detail/', DetailBlogView.as_view(), name='blog_detail'),
     path('users/', include('apps.users.urls')),
     path('blogs/', include('apps.blogs.urls')),
