@@ -79,6 +79,7 @@
                 success: function (data) {
                         if (data) {
                             localStorage.setItem('accessToken', data['access']);
+                            localStorage.setItem('user_id', data['user_id']);
                             // Redirect to the home page
                              window.location.href = '/home/';
                             console.log(data);

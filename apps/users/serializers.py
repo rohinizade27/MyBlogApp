@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 def custom_password_validator(password):
@@ -42,18 +43,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return user
 
 
-class GetTokenPairSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
-
+class GetTokenPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-        user = CustomUser.objects.filter(email=email).first()
+        data = super().validate(attrs)
+        user = self.user or self.context['user']
 
-        if user and user.check_password(password):
-            refresh = RefreshToken.for_user(user)
-            attrs['refresh'] = str(refresh)
-            attrs['access'] = str(refresh.access_token)
+        # Add custom fields to the response
+        data['user_id'] = user.id
 
-        return attrs
+        return data

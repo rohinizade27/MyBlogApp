@@ -1,67 +1,203 @@
 {% extends "base.html" %}
 {% block start %}
+{% load static %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsonwebtoken/8.5.1/jsonwebtoken.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<section class="position-relative py-6">
-    <img class="bg-image" src="https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="">
+
+<section class="position-relative py-6" id="blog_info" style="background-image: url('{% static 'img/blog_home.jpg' %}');background-size: contain;" >
     <div class="container">
       <div class="row">
         <div class="col-lg-6">
           <div class="bg-white rounded-lg shadow p-5"><strong class="text-uppercase text-secondary d-inline-block mb-2 text-sm">Featured</strong>
-            <h2 class="mb-3">Escape the city today</h2>
-            <p class="text-muted">As am hastily invited settled at limited civilly fortune me. Really spring in extent an by. Judge but built party world. Of so am he remember although required. Bachelor unpacked be advanced at. Confined in declared marianne is vicinity</p><a class="btn btn-link p-0" href="post.html">Continue reading <i class="fa fa-long-arrow-alt-right"></i></a>
+            <h2 class="mb-3">Discover, Inspire, Engage.</h2>
+            <p class="text-muted">Welcome to our blog, a hub of captivating content that will ignite your curiosity and leave you craving for more. From insightful articles to thought-provoking discussions, we are here to empower your mind and nourish your soul. Get ready to embark on a journey filled with inspiration, knowledge, and fresh perspectives. Happy reading!</p><a class="btn btn-link p-0" href="/home/">Continue reading <i class="fa fa-long-arrow-alt-right"></i></a>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <section class="py-6">
+  <section class="py-6" id="blog_list">
       <div class="container">
         <div class="row mb-5" id="blogContainer">
 
         </div>
     </div>
   </section>
-  <!-- Footer-->
+<section id="blog_detail">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-xl-10 mx-auto"><img class="img-fluid mb-5"
+                    src=""
+                    alt=""></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-8 col-lg-10 mx-auto">
+                <div class="text-content">
 
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+  <!-- Footer-->
 <script>
   $(document).ready(function() {
     // Retrieve the list of blogs from the server
     var token = localStorage.getItem('accessToken'); // Retrieve the token from local storage
-    console.log(token)
-    $.ajax({
-      type: 'GET',
-      url: '/blogs/api/blog-list-create/',
-      beforeSend: function(xhr, settings) {
-      xhr.setRequestHeader('Authorization', 'Bearer ' + token);}, // Include the token in the request headers
-      success: function(response) {
-        // Loop through the blogs and create Bootstrap cards
-        for (var i = 0; i < response.length; i++) {
-          var blog = response[i];
-          var blogCard = `
-            <div class="col-lg-4 col-sm-6 mb-4 hover-animate">
-                <div class="card shadow border-0 h-100">
-                  <a href="">
-                    <img class="img-fluid card-img-top" src="${blog.image}" alt="..."/></a>
-                  <div class="card-body"><a class="text-uppercase text-muted text-sm letter-spacing-2" href="#">
-                    ${blog.user}</a>
-                    <h5 class="my-2"><a class="text-dark" href="/">
-                     ${blog.title}</a></h5>
-                    <p class="text-gray-500 text-sm my-3"><i class="far fa-clock mr-2"></i>
-                      ${blog.created_at}</p>
-                    <a class="btn btn-link pl-0"href="">Read more<i class="fa fa-long-arrow-alt-right ml-2"></i></a>
-                  </div>
-                </div>
-              </div>
-          `;
-          $('#blogContainer').append(blogCard); // Append the card to the container
+    var user_id = localStorage.getItem('user_id'); // Retrieve the user_id from local storage
+    console.log('token-->',token)
+    console.log('user_id-->',user_id)
+        function isTokenValid(token) {
+          if (token) {
+            try {
+              const decodedToken = JSON.parse(atob(token.split('.')[1]));
+              const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
+
+              // Check if the token's expiration time is greater than the current time
+              if (decodedToken.exp > currentTime) {
+                console.log('home page...Token is valid...');
+                $('#logout-button').show();
+                $('#add-blog-button').on('click', function() {
+                    console.log('redirect to add blog page....')
+                    window.location.href = '/add_blog/';
+                 });
+                 $.ajax({
+                          type: 'GET',
+                          url: '/blogs/api/blog-list-by-use/' + user_id + '/',
+                          beforeSend: function(xhr, settings) {
+                          xhr.setRequestHeader('Authorization', 'Bearer ' + token);}, // Include the token in the request headers
+                          success: function(response) {
+                            console.log(response)
+                            // Loop through the blogs and create Bootstrap cards
+                            for (var i = 0; i < response.length; i++) {
+                              var blog = response[i];
+                              var blogCard = `
+                                <div class="col-lg-4 col-sm-6 mb-4 hover-animate">
+                                    <div class="card shadow border-0 h-100">
+                                      <a href="">
+                                        <img class="img-fluid card-img-top" src="${blog.image}" alt="..."/></a>
+                                      <div class="card-body"><a class="text-uppercase text-muted text-sm letter-spacing-2" href="#">
+                                        ${blog.user}</a>
+                                        <h5 class="my-2"><a class="text-dark" href="/">
+                                         ${blog.title}</a></h5>
+                                        <p class="text-gray-500 text-sm my-3"><i class="far fa-clock mr-2"></i>
+                                          ${blog.created_at}</p>
+                                        <a class="btn btn-link pl-0 read-more" data-blog-id="${blog.id}">Read more<i class="fa fa-long-arrow-alt-right ml-2"></i></a>
+                                      </div>
+                                    </div>
+                                  </div>
+                              `;
+                              $('#blogContainer').append(blogCard); // Append the card to the container
+                              $('.read-more').on('click', function() {
+                                var blogId = $(this).data('blog-id');
+                                console.log("direct to detail blog view page...")
+                                 $.ajax({
+                                    url: '/blogs/api/blog-retrieve-update-destroy/'+blogId+'/',
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    beforeSend: function(xhr, settings) {
+                                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);},
+                                    success: function(responseData) {
+                                       console.log(responseData)
+                                       var blogDetails = responseData;
+                                       // Update the image source
+                                        $('#blog_detail img').attr('src', responseData.image);
+                                        // Update the text content
+                                        $('#blog_detail .text-content').html(`
+                                          <h2>${blogDetails.title}</h2>
+                                          <p>${blogDetails.content}</p>
+                                          <p>Author: ${blogDetails.user}</p>
+                                        `);
+                                      $('#blog_list').hide();
+                                      $('#blog_info').hide();
+                                    },
+                                    error: function(xhr, status, error) {
+                                      console.error('Request failed. Status:', status);
+                                    }
+                                  });
+
+                              });
+                            }
+                          },
+                          error: function(xhr, textStatus, error) {
+                            console.log(error);
+                          }
+                        });
+                      }
+            } catch (error) {
+              console.error('Error decoding JWT token:', error);
+            }
+          }
+          else{
+            // Redirect to the login page,Token is missing or expired
+            console.log('Token is missing or expired...');
+             $.ajax({
+              type: 'GET',
+              url: '/blogs/api/blog-list-create/',
+              success: function(response) {
+                // Loop through the blogs and create Bootstrap cards
+                for (var i = 0; i < response.length; i++) {
+                  var blog = response[i];
+                  var blogCard = `
+                    <div class="col-lg-4 col-sm-6 mb-4 hover-animate">
+                        <div class="card shadow border-0 h-100">
+                          <a href="">
+                            <img class="img-fluid card-img-top" src="${blog.image}" alt="..."/></a>
+                          <div class="card-body"><a class="text-uppercase text-muted text-sm letter-spacing-2" href="#">
+                            ${blog.user}</a>
+                            <h5 class="my-2"><a class="text-dark" href="/">
+                             ${blog.title}</a></h5>
+                            <p class="text-gray-500 text-sm my-3"><i class="far fa-clock mr-2"></i>
+                              ${blog.created_at}</p>
+                            <a class="btn btn-link pl-0 read-more" data-blog-id="${blog.id}">Read more<i class="fa fa-long-arrow-alt-right ml-2"></i></a>
+                          </div>
+                        </div>
+                      </div>
+                  `;
+                  $('#blogContainer').append(blogCard); // Append the card to the container
+                  $('.read-more').on('click', function() {
+                                var blogId = $(this).data('blog-id');
+                                console.log("direct to detail blog view page...")
+                                 $.ajax({
+                                    url: '/blogs/api/blog-retrieve-update-destroy/'+blogId+'/',
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    success: function(responseData) {
+                                       console.log(responseData)
+                                       var blogDetails = responseData;
+                                       // Update the image source
+                                        $('#blog_detail img').attr('src', responseData.image);
+                                        // Update the text content
+                                        $('#blog_detail .text-content').html(`
+                                          <h2>${blogDetails.title}</h2>
+                                          <p>${blogDetails.content}</p>
+                                          <p>Author: ${blogDetails.user}</p>
+                                        `);
+                                      $('#blog_list').hide();
+                                      $('#blog_info').hide();
+                                    },
+                                    error: function(xhr, status, error) {
+                                      console.error('Request failed. Status:', status);
+                                    }
+                                  });
+
+                              });
+
+                }
+              },
+              error: function(xhr, textStatus, error) {
+                console.log(error);
+              }
+            });
+
+          }
+
         }
-      },
-      error: function(xhr, textStatus, error) {
-        console.log(error);
-      }
-    });
-  });
+        const isLoggedIn = isTokenValid(token);
+
+
+
+       });
 </script>
-
-
   {% endblock %}

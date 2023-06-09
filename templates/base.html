@@ -21,8 +21,8 @@
     <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
     <!-- theme stylesheet-->
     <link rel="stylesheet" href="{% static 'css/default.css' %}" id="theme-stylesheet">
-    <link rel="stylesheet" href="{% static 'css/all.css' %}">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsonwebtoken/8.5.1/jsonwebtoken.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
    </head>
      <body style="padding-top: 72px;">
     <input type="hidden" id="csrf" value="{{csrf_token}}">
@@ -31,18 +31,18 @@
       <nav class="navbar navbar-expand-lg fixed-top shadow navbar-light bg-white">
         <div class="container-fluid">
           <div class="d-flex align-items-center"><a class="navbar-brand py-1" href="{% url 'home' %}">
-          <h3>My Blog App</h3>
+          <h3>Blogify</h3>
           </div>
           <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
           <!-- Navbar Collapse -->
           <div class="collapse navbar-collapse" id="navbarCollapse">
 
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item mt-3 mt-lg-0 ml-lg-3 d-lg-none d-xl-inline-block">
-                <a class="btn btn-info" href="{% url 'add_blog' %}">Add Blogs</a>
+              <li class="nav-item mt-3 mt-lg-0 ml-lg-3 d-lg-none d-xl-inline-block">
+                <a class="btn btn-info"id="add-blog-button">Add Blogs</a>
               </li>
               <li class="nav-item mt-3 mt-lg-0 ml-lg-3 d-lg-none d-xl-inline-block">
-                <a class="btn btn-danger" href="{% url 'logout_view' %}">Logout</a>
+                <a class="btn btn-danger" id = 'logout-button'>Logout</a>
               </li>
             </ul>
           </div>
@@ -51,15 +51,11 @@
       <!-- /Navbar -->
     </header>
 
-
     {% block start %}
-
 
     {% endblock %}
 
-
     <footer class="position-relative z-index-10 d-print-none">
-
       <div class="py-4 font-weight-light bg-gray-800 text-gray-300">
         <div class="container">
           <div class="row align-items-center">
@@ -71,8 +67,54 @@
         </div>
       </div>
     </footer>
-
-
   </body>
 
 </html>
+<script>
+
+  $(document).ready(function() {
+    console.log('base page...')
+    var token = localStorage.getItem('accessToken'); // Retrieve the token from local storage
+    var user_id = localStorage.getItem('user_id'); // Retrieve the user_id from local storage
+    console.log('token-->',token)
+    console.log('user_id-->',user_id)
+     function isTokenValid(token) {
+      if (token && user_id) {
+        try {
+          const decodedToken = JSON.parse(atob(token.split('.')[1]));
+          const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
+
+          // Check if the token's expiration time is greater than the current time
+          if (decodedToken.exp > currentTime) {
+            console.log('base page ...Token is valid....')
+            $('#add-blog-button').on('click', function() {
+                console.log('redirect to add blog page....')
+                window.location.href = '/add_blog/';
+              });
+          }
+        } catch (error) {
+          console.error('Error decoding JWT token:', error);
+        }
+      }
+     else{
+          console.log('hide logout button')
+          $('#logout-button').hide();
+          $('#add-blog-button').on('click', function() {
+            // Redirect to the login page
+            window.location.href = '/login/';
+          });
+      }
+    }
+    const isLoggedIn = isTokenValid(token);
+
+    // Add an event listener to the logout button
+    document.getElementById("logout-button").addEventListener("click", function() {
+      // Clear the token from local storage
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user_id");
+      // Redirect to the logout page or perform any other logout-related actions
+    window.location.href = "/login/"
+});
+
+  });
+ </script>

@@ -29,3 +29,19 @@ class RegisterView(APIView):
 
 class GetTokenPairView(TokenObtainPairView):
     serializer_class = GetTokenPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print(request.data)
+        serializer.is_valid(raise_exception=True)
+        response = super().post(request, *args, **kwargs)
+
+        # Customize the response format
+        response_data = {
+            'refresh': response.data['refresh'],
+            'access': response.data['access'],
+            'user_id': response.data['user_id'],
+        }
+
+        return Response(response_data)
+

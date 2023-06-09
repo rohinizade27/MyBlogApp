@@ -26,7 +26,6 @@ class BlogSerializer(serializers.ModelSerializer):
         model = BlogModel
         fields = '__all__'
 
-
     def validate_title(self, value):
         if len(value) > 1000:
             raise serializers.ValidationError("Title must be less than or equal to 1000 characters.")
