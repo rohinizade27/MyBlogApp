@@ -1,0 +1,166 @@
+{
+	"info": {
+		"_postman_id": "10af7fd1-ebc5-468b-bde7-739ff7e9e19e",
+		"name": "BlogApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Singup API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "rohinizade43@gamil.com",
+							"type": "default"
+						},
+						{
+							"key": "password",
+							"value": "rohini@12345",
+							"type": "default"
+						},
+						{
+							"key": "name",
+							"value": "Rohini Zade",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/users/api/register/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"api",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "blog create/list API",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "my first blog",
+							"type": "default"
+						},
+						{
+							"key": "content",
+							"value": "Hello user, welcome to my blog",
+							"type": "default"
+						},
+						{
+							"key": "user",
+							"value": "3",
+							"type": "default"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "created_at",
+							"value": "",
+							"type": "default",
+							"disabled": true
+						},
+						{
+							"key": "upload_to",
+							"value": "",
+							"type": "default",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8007/blogs/api/blog-list-create",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8007",
+					"path": [
+						"blogs",
+						"api",
+						"blog-list-create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login API",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "blog-retrieve-update-destroy",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "api/blog-search/",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "like-list-create",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "/comment-list-create/",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "blog-list-by-use",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
