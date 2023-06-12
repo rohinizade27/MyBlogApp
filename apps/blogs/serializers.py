@@ -8,14 +8,21 @@ The name field is added using SerializerMethodField(), which will call the get_n
 The Meta class specifies the model as Comment and lists the desired fields to include in the serialized representation.
 """
 class CommentSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
+    # blog_id = serializers.SerializerMethodField()
+    user_image = serializers.SerializerMethodField()
+    user_email = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'name', 'blog', 'content', 'created_at']
+        fields = ['id', 'content', 'created_at', 'user', 'blog', 'user_email','user_image']
 
-    def get_name(self, obj):
-        return obj.user.name
+    def get_user_email(self, comment):
+        return comment.user.email
+
+    def get_user_image(self, comment):
+        return comment.blog.image.url if comment.blog.image else None
+
+
 
 
 """

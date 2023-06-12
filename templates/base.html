@@ -30,7 +30,7 @@
 
       <nav class="navbar navbar-expand-lg fixed-top shadow navbar-light bg-white">
         <div class="container-fluid">
-          <div class="d-flex align-items-center"><a class="navbar-brand py-1" href="{% url 'home' %}">
+          <div class="d-flex align-items-center"><a class="navbar-brand py-1" href="{% url 'main' %}">
           <h3>Blogify</h3>
           </div>
           <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
@@ -38,6 +38,9 @@
           <div class="collapse navbar-collapse" id="navbarCollapse">
 
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item mt-3 mt-lg-0 ml-lg-3 d-lg-none d-xl-inline-block">
+                    <a id='view-your-blogs' class="btn btn-warning">View Your blogs</a>
+                </li>
               <li class="nav-item mt-3 mt-lg-0 ml-lg-3 d-lg-none d-xl-inline-block">
                 <a class="btn btn-info"id="add-blog-button">Add Blogs</a>
               </li>
@@ -91,6 +94,10 @@
                 console.log('redirect to add blog page....')
                 window.location.href = '/add_blog/';
               });
+            $('#view-your-blogs').on('click', function() {
+                console.log('redirect to add blog page....')
+                window.location.href = '/home/';
+              });
           }
         } catch (error) {
           console.error('Error decoding JWT token:', error);
@@ -99,6 +106,7 @@
      else{
           console.log('hide logout button')
           $('#logout-button').hide();
+          $('#view-your-blogs').hide();
           $('#add-blog-button').on('click', function() {
             // Redirect to the login page
             window.location.href = '/login/';

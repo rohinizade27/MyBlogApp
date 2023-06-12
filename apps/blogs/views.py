@@ -6,6 +6,10 @@ from .models import BlogModel, Comment, Like, CustomUser
 from .serializers import BlogSerializer, CommentSerializer, LikeSerializer
 from rest_framework.permissions import BasePermission
 
+
+class MainView(TemplateView):
+    template_name = 'blog/main.html'
+
 """
 The BlogView class is a view that extends TemplateView.
 It renders the blog/home.html template.
@@ -105,6 +109,7 @@ The patch() method partially updates a specific blog object with the request dat
 validates it using BlogSerializer, and returns the updated serialized data in the response.
 The delete() method deletes a specific blog object and returns a response with no content.
 """
+
 class BlogRetrieveUpdateDestroyAPIView(APIView):
     class AllowAnyPermission(BasePermission):
         def has_permission(self, request, view):
@@ -138,11 +143,17 @@ class BlogRetrieveUpdateDestroyAPIView(APIView):
         blog = BlogModel.objects.get(id=blog_id)
         likes = Like.objects.filter(blog_id=blog_id)
         like_count = likes.count()
-        print(email)
-        # Serialize and include the comments associated with the blog
+        user_has_liked = False
+
+        if request.user.is_authenticated:
+            # Check if the authenticated user has already liked the blog
+            user_has_liked = likes.filter(user=request.user).exists()
+
         data['comments'] = CommentSerializer(blog.comments.all(), many=True).data
         data['like_count'] = like_count
         data['user'] = email
+        data['user_has_liked'] = user_has_liked
+
         return Response(data)
 
     def put(self, request, pk):
@@ -234,6 +245,7 @@ The post() method creates a new like object based on the request data,
 validates it using LikeSerializer, and saves it to the database if valid. 
 It returns the serialized data of the created like in the response.
 """
+
 class LikeListCreateAPIView(APIView):
     def get(self, request):
         # Retrieve all like objects from the database
@@ -243,13 +255,57 @@ class LikeListCreateAPIView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        # Get the user and blog IDs from the request data
+        user_id = request.data.get('user')
+        blog_id = request.data.get('blog')
+
+        # Check if the user has already liked the blog
+        existing_like = Like.objects.filter(user_id=user_id, blog_id=blog_id).first()
+        if existing_like:
+            return Response({'detail': 'You have already liked this blog.'}, status=status.HTTP_400_BAD_REQUEST)
+
         # Serialize the request data
         serializer = LikeSerializer(data=request.data)
         if serializer.is_valid():
             # Save the serialized data as a new Like object
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            # Retrieve the like count for the given blog
+            like_count = Like.objects.filter(blog_id=blog_id).count()
+
+            # Create a response data dictionary with the like count
+            response_data = {
+                'detail': 'Blog liked successfully.',
+                'like_count': like_count
+            }
+
+            return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        # Get the user and blog IDs from the request data
+        user_id = request.data.get('user')
+        blog_id = request.data.get('blog')
+
+        # Retrieve the like object based on the user ID and blog ID
+        like = Like.objects.filter(user_id=user_id, blog_id=blog_id).first()
+        if like:
+            # Delete the like object
+            like.delete()
+
+            # Retrieve the like count for the given blog
+            like_count = Like.objects.filter(blog_id=blog_id).count()
+
+            # Create a response data dictionary with the like count
+            response_data = {
+                'detail': 'Blog unliked successfully.',
+                'like_count': like_count
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'You have not liked this blog.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 """
